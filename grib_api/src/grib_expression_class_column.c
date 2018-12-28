@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -119,7 +119,7 @@ static string evaluate_string(grib_expression* g,grib_handle* h,char* buf,size_t
 {
   grib_expression_column* e = (grib_expression_column*)g;
   Assert(buf);
-  if((err=grib_get_string_internal(h,e->name,buf,size)) != GRIB_SUCCESS)
+  if((*err=grib_get_string_internal(h,e->name,buf,size)) != GRIB_SUCCESS)
   {
     grib_context_log(h->context, GRIB_LOG_DEBUG,
     "Error in evaluate_string %s : %s", e->name,grib_get_error_message(err));

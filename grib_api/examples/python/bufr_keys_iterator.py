@@ -1,4 +1,4 @@
-# Copyright 2005-2017 ECMWF.
+# Copyright 2005-2018 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -15,6 +15,7 @@
 #           keys in a BUFR message.
 
 
+from __future__ import print_function
 import traceback
 import sys
 
@@ -25,9 +26,8 @@ VERBOSE = 1  # verbose error reporting
 
 
 def example():
-
     # open bufr file
-    f = open(INPUT)
+    f = open(INPUT, 'rb')
 
     cnt = 0
 
@@ -38,21 +38,20 @@ def example():
         if bufr is None:
             break
 
-        print "message: %s" % cnt
+        print("message: %s" % cnt)
 
         # we need to instruct ecCodes to expand all the descriptors
         # i.e. unpack the data values
-        codes_set(bufr,'unpack',1)
+        codes_set(bufr, 'unpack', 1)
 
         # get BUFR key iterator
         iterid = codes_bufr_keys_iterator_new(bufr)
 
         # loop over the keys
         while codes_bufr_keys_iterator_next(iterid):
-
             # print key name
             keyname = codes_bufr_keys_iterator_get_name(iterid)
-            print "  %s" % keyname
+            print("  %s" % keyname)
 
         # delete the key iterator
         codes_bufr_keys_iterator_delete(iterid)
@@ -76,6 +75,7 @@ def main():
             sys.stderr.write(err.msg + '\n')
 
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

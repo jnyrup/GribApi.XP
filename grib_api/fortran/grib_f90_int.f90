@@ -1,4 +1,4 @@
-! Copyright 2005-2017 ECMWF.
+! Copyright 2005-2018 ECMWF.
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 ! which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -66,9 +66,10 @@
   !>
   !> Given a \em msgid and \em key as input a \em value for the \em key is returned.
   !> In some cases the \em value can be an array rather than a scalar.
-  !> As examples of array keys we have "values","pl", "pv" respectively the data values,
-  !> the list of number of points for each latitude in a reduced grid and the list of
-  !> vertical levels. In these cases the \em value array must be allocated by the caller
+  !> As examples of GRIB array keys we have "values" (the data values),
+  !> "pl" (the list of number of points for each latitude in a reduced grid) and
+  !> "pv" (the list of vertical levels).
+  !> In these cases the \em value array must be allocated by the caller
   !> and their required dimension can be obtained with \ref grib_get_size. \n
   !> The \em value can be integer(4), real(4), real(8), character.
   !> Although each key has its own native type, a key of type integer
@@ -87,7 +88,7 @@
   !> @see grib_new_from_file, grib_release, grib_set
   !>
   !>
-  !> @param[in] msgid      id of the loaded in memory
+  !> @param[in] msgid      id of the message loaded in memory
   !> @param[in] key        key name
   !> @param[out] value     value can be a scalar or array of integer(4),real(4),real(8),character
   !> @param[out] status    GRIB_SUCCESS if OK, integer value on error
@@ -123,11 +124,12 @@
   !>
   !> The given \em value is set for the \em key in the \em msgid message.
   !> In some cases the \em value can be an array rather than a scalar.
-  !> As examples of array keys we have "values","pl", "pv" respectively the data values,
-  !> the list of number of points for each latitude in a reduced grid and the list of
-  !> vertical levels. In these cases the \em value array must be allocated by the caller
+  !> As examples of GRIB array keys we have "values" (the data values),
+  !> "pl" (the list of number of points for each latitude in a reduced grid) and
+  !> "pv" (the list of vertical levels).
+  !> In these cases the \em value array must be allocated by the caller
   !> and their required dimension can be obtained with \ref grib_get_size. \n
-  !> The gribid references to a grib message loaded in memory.
+  !> The msgid references to a message loaded in memory.
   !>
   !> In case of error, if the status parameter (optional) is not given, the program will
   !> exit with an error message.\n Otherwise the error message can be

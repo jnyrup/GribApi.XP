@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -234,7 +234,6 @@ if( PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME )
     include( ecbuild_compiler_flags )               # compiler flags
     include( ecbuild_check_compiler )               # check for compiler characteristics
     include( ecbuild_check_os )                     # check for os characteristics
-    include( ecbuild_check_functions )              # check for available functions
     include( ecbuild_define_paths )                 # defines installation paths
     include( ecbuild_define_libs_and_execs_target ) # defines the top level execs and libs
     include( ecbuild_define_links_target )          # defines the links target

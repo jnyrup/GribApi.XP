@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -77,7 +77,7 @@ void grib_oarray_delete(grib_context* c,grib_oarray* v)
 void grib_oarray_delete_content(grib_context* c,grib_oarray* v)
 {
     int i;
-    if (!v | !v->v) return;
+    if (!v || !v->v) return;
     if (!c) grib_context_get_default();
     for (i=0;i<v->n;i++) {
         if (v->v[i]) grib_context_free(c,v->v[i]);

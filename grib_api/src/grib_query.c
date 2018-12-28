@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -134,7 +134,7 @@ static grib_accessor* _search_and_cache(grib_handle* h, const char* name,const c
     }
 }
 
-static char* get_rank(const char* name,int *rank) {
+static char* get_rank(grib_context* c, const char* name,int *rank) {
     char* p=(char*)name;
     char* end=p;
     char* ret=NULL;
@@ -146,7 +146,7 @@ static char* get_rank(const char* name,int *rank) {
         if ( *end != '#') {
             *rank=-1;
         } else {
-            grib_context* c=grib_context_get_default();
+            DebugAssert(c);
             end++;
             ret=grib_context_strdup(c,end);
         }
@@ -234,8 +234,8 @@ static grib_accessor* search_by_rank(grib_handle* h, const char* name,int rank,c
         return _search_by_rank(data,name,rank);
     } else {
         grib_accessor* ret=NULL;
-        int rank;
-        char* str=get_rank(name,&rank);
+        int rank2;
+        char* str=get_rank(h->context, name, &rank2);
         ret=_search_and_cache(h,str,the_namespace);
         grib_context_free(h->context,str);
         return ret;
@@ -369,12 +369,12 @@ grib_accessors_list* grib_find_accessors_list(grib_handle* h,const char* name)
     } else if (name[0]=='#') {
         a=grib_find_accessor(h, name);
         if (a) {
-            char* str;
+            char* str2;
             int r;
             al=(grib_accessors_list*)grib_context_malloc_clear(h->context,sizeof(grib_accessors_list));
-            str=get_rank(name,&r);
+            str2=get_rank(h->context, name, &r);
             grib_accessors_list_push(al,a,r);
-            grib_context_free(h->context,str);
+            grib_context_free(h->context,str2);
         }
     } else {
         a=grib_find_accessor(h, name);
@@ -393,8 +393,9 @@ static grib_accessor* search_and_cache(grib_handle* h, const char* name,const ch
 
     if (name[0]=='#') {
         int rank=-1;
-        char* basename=get_rank(name,&rank);
+        char* basename=get_rank(h->context, name, &rank);
         a=search_by_rank(h,basename,rank,the_namespace);
+        grib_context_free(h->context,basename);
     } else {
         a=_search_and_cache(h,name,the_namespace);
     }
@@ -405,11 +406,11 @@ static grib_accessor* search_and_cache(grib_handle* h, const char* name,const ch
 static grib_accessor* _grib_find_accessor(grib_handle* h, const char* name)
 {
     grib_accessor* a = NULL;
-    char* p = (char*)name;
+    char* p = NULL;
     DebugAssert(name);
 
-    while ( *p != '.' && *p != '\0' ) p++;
-    if ( *p == '.' ) {
+    p = strchr((char*)name, '.');
+    if ( p ) {
         int i=0,len=0;
         char name_space[MAX_NAMESPACE_LEN];
         char* basename=NULL;
@@ -436,12 +437,10 @@ static grib_accessor* _grib_find_accessor(grib_handle* h, const char* name)
 char* grib_split_name_attribute(grib_context* c,const char* name,char* attribute_name)
 {
     /*returns accessor name and attribute*/
-    char* p=0;
     size_t size=0;
     char* accessor_name=NULL;
-    p=(char*)name;
-    while ( *(p+1) != '\0' && ( *p != '-' || *(p+1)!= '>' ) ) p++;
-    if (*(p+1) == '\0') {
+    char* p = strstr((char*)name, "->");
+    if (!p) {
         *attribute_name=0;
         return (char*)name;
     }
@@ -456,7 +455,7 @@ char* grib_split_name_attribute(grib_context* c,const char* name,char* attribute
 grib_accessor* grib_find_accessor(grib_handle* h, const char* name)
 {
     grib_accessor* aret = NULL;
-
+    Assert(h);
     if (h->product_kind == PRODUCT_GRIB) {
         aret = _grib_find_accessor(h, name); /* ECC-144: Performance */
     }
@@ -500,10 +499,11 @@ grib_accessor* grib_find_attribute(grib_handle* h, const char* name,const char* 
 grib_accessor* grib_find_accessor_fast(grib_handle* h, const char* name)
 {
     grib_accessor* a = NULL;
-    char* p = (char*)name;
+    char* p = NULL;
+    DebugAssert(name);
 
-    while ( *p != '.' && *p != '\0' ) p++;
-    if ( *p == '.' ) {
+    p = strchr((char*)name, '.');
+    if ( p ) {
         int i=0,len=0;
         char name_space[MAX_NAMESPACE_LEN];
         p--;

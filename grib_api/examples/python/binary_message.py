@@ -1,5 +1,5 @@
 #
-# Copyright 2005-2017 ECMWF.
+# Copyright 2005-2018 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,8 +18,8 @@ VERBOSE = 1  # verbose error reporting
 
 
 def example():
-    f = open(sys.argv[1])
-    fout = open(sys.argv[2], 'w')
+    f = open(sys.argv[1], 'rb')
+    fout = open(sys.argv[2], 'wb')
 
     while 1:
         gid = codes_grib_new_from_file(f)
@@ -48,6 +48,7 @@ def main():
             sys.stderr.write(err.msg + '\n')
 
         return 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

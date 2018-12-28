@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -127,6 +127,10 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
     ecbuild_critical("Unknown keywords given to ecbuild_try_run(): \"${_p_UNPARSED_ARGUMENTS}\"")
   endif()
 
+  if( CMAKE_EXE_LINKER_FLAGS )
+    set( _p_LINK_LIBRARIES "${_p_LINK_LIBRARIES} ${CMAKE_EXE_LINKER_FLAGS}" )
+  endif()
+
   # Build argument list for try_compile
   foreach( _opt CMAKE_FLAGS COMPILE_DEFINITIONS LINK_LIBRARIES  )
     if( _p_${_opt} )
@@ -137,7 +141,7 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
   ecbuild_debug( "ecbuild_try_run: Compiling ${SRCFILE} in ${BINDIR}" )
   try_compile( _compile_res ${BINDIR} ${SRCFILE}
                OUTPUT_VARIABLE _compile_out
-               COPY_FILE ${SRCFILE}.bin COPY_FILE_ERROR _compile_err
+               COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/${SRCFILE}.bin COPY_FILE_ERROR _compile_err
                ${_opts} )
 
   if( _compile_out )
@@ -157,8 +161,8 @@ function( ecbuild_try_run RUN_RESULT_VAR COMPILE_RESULT_VAR BINDIR SRCFILE )
 
   if( _compile_res )
 
-    ecbuild_debug( "ecbuild_try_run: Running ${SRCFILE}.bin in ${BINDIR}" )
-    execute_process( COMMAND ${SRCFILE}.bin WORKING_DIRECTORY ${BINDIR}
+    ecbuild_debug( "ecbuild_try_run: Running ${CMAKE_CURRENT_BINARY_DIR}/${SRCFILE}.bin in ${BINDIR}" )
+    execute_process( COMMAND ${CMAKE_CURRENT_BINARY_DIR}/${SRCFILE}.bin WORKING_DIRECTORY ${BINDIR}
                      RESULT_VARIABLE _run_res
                      OUTPUT_VARIABLE _run_out ERROR_VARIABLE _run_err )
 

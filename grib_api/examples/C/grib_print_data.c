@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -19,7 +19,7 @@
 
 #include "eccodes.h"
 
-void usage(const char* prog) {
+static void usage(const char* prog) {
     printf("usage: %s filename\n",prog);
     exit(1);
 }
@@ -71,8 +71,7 @@ int main(int argc, char** argv)
     printf("max=%.10e min=%.10e average=%.10e\n",max,min,average);
 
     {
-        /* Example of accessing specific elements from data values */
-        int i=0;
+        /* Example of accessing specific elements from data values  */
         double vals_arr[3] = {0, 0, 0};
         const int NUM = 3;
         int index_arr[3];

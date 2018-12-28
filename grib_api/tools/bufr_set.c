@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -41,11 +41,11 @@ grib_option grib_options[]={
         {"v",0,0,0,1,0}
 };
 
-char* grib_tool_description="Sets key/value pairs in the input BUFR file and writes"
+const char* grib_tool_description="Sets key/value pairs in the input BUFR file and writes"
         "\n\teach message to the output_bufr_file."
         "\n\tIt fails when an error occurs (e.g. key not found).";
-char* grib_tool_name="bufr_set";
-char* grib_tool_usage="[options] file file ... output_file";
+const char* grib_tool_name="bufr_set";
+const char* grib_tool_usage="[options] file file ... output_file";
 
 int grib_options_count=sizeof(grib_options)/sizeof(grib_option);
 

@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -33,7 +33,7 @@ function( ecbuild_generate_fortran_interfaces )
   endif()
 
   set( options )
-  set( single_value_args TARGET DESTINATION PARALLEL INCLUDE_DIRS GENERATED SOURCE_DIR FCM_CONFIG_FILE )
+  set( single_value_args TARGET DESTINATION PARALLEL INCLUDE_DIRS GENERATED SOURCE_DIR SUFFIX FCM_CONFIG_FILE )
   set( multi_value_args DIRECTORIES )
 
   cmake_parse_arguments( P "${options}" "${single_value_args}" "${multi_value_args}"  ${_FIRST_ARG} ${ARGN} )
@@ -57,7 +57,11 @@ function( ecbuild_generate_fortran_interfaces )
   ecbuild_debug_var( P_PARALLEL )
 
   if( NOT DEFINED P_SOURCE_DIR )
-    ecbuild_error( "ecbuild_generate_fortran_interfaces: SOURCE_DIR argument missing")
+    set( P_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}" )
+  endif()
+
+  if( NOT DEFINED P_SUFFIX )
+    set( P_SUFFIX ".intfb.h" )
   endif()
 
   if( DEFINED P_FCM_CONFIG_FILE )
@@ -75,13 +79,9 @@ function( ecbuild_generate_fortran_interfaces )
   endif()
 
   if( NOT FCM_CONFIG_FILE )
-    set( DEFAULT_FCM_CONFIG_FILE "${ECBUILD_MACROS_DIR}/fcm-make-interfaces.cfg" )
-    if( EXISTS ${DEFAULT_FCM_CONFIG_FILE} )
-      set( FCM_CONFIG_FILE ${DEFAULT_FCM_CONFIG_FILE} )
-      ecbuild_debug( "ecbuild_generate_fortran_interfaces: fcm configuration found in ${DEFAULT_FCM_CONFIG_FILE}" )
-    else()
-      ecbuild_debug( "ecbuild_generate_fortran_interfaces: fcm configuration not found in ${DEFAULT_FCM_CONFIG_FILE}" )
-    endif()
+    set( FCM_CONFIG_FILE "${ECBUILD_MACROS_DIR}/fcm-make-interfaces.cfg" )
+    set( FCM_CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/fcm-make-interfaces.${P_TARGET}.cfg" )
+    configure_file( "${ECBUILD_MACROS_DIR}/fcm-make-interfaces.cfg.in" "${FCM_CONFIG_FILE}" @ONLY )
   endif()
 
   ecbuild_debug_var( FCM_CONFIG_FILE )
@@ -94,7 +94,8 @@ function( ecbuild_generate_fortran_interfaces )
     if( _srcdir MATCHES "/$" )
       ecbuild_critical("ecbuild_generate_fortran_interfaces: directory ${_srcdir} must not end with /")
     endif()
-    ecbuild_list_add_pattern( LIST fortran_files SOURCE_DIR ${P_SOURCE_DIR} GLOB ${_srcdir}/*.F* )
+    ecbuild_list_add_pattern( LIST fortran_files SOURCE_DIR ${P_SOURCE_DIR}
+      GLOB ${_srcdir}/*.[fF] ${_srcdir}/*.[fF]90 ${_srcdir}/*.[fF]03 ${_srcdir}/*.[fF]08 QUIET )
   endforeach()
 
   string( REPLACE ";" " " _srcdirs "${P_DIRECTORIES}" )
@@ -109,7 +110,7 @@ function( ecbuild_generate_fortran_interfaces )
   foreach( fortran_file ${fortran_files} )
     #list( APPEND fullpath_fortran_files ${CMAKE_CURRENT_SOURCE_DIR}/${fortran_file} )
       get_filename_component(base ${fortran_file} NAME_WE)
-      set( interface_file "${CMAKE_CURRENT_BINARY_DIR}/interfaces/include/${base}.intfb.h" )
+      set( interface_file "${CMAKE_CURRENT_BINARY_DIR}/interfaces/include/${base}${P_SUFFIX}" )
       list( APPEND interface_files ${interface_file} )
       set_source_files_properties( ${interface_file} PROPERTIES GENERATED TRUE )
       math(EXPR _cnt "${_cnt}+1")

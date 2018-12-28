@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -18,13 +18,13 @@
 #  NAG_DIR   - root folder of the NAG installation
 #  NAG_PATH  - root folder of the NAG installation
 
-find_path( NAG_INCLUDE_DIR nag_library.mod
+find_path( NAG_INCLUDE_DIR nag_precisions.mod
            PATHS ${NAG_PATH} ENV NAG_PATH
                  ${NAG_DIR}  ENV NAG_DIR
            PATH_SUFFIXES include
            NO_DEFAULT_PATH )
 
-find_library( NAG_LIBRARY NAMES nag nag_nag
+find_library( NAG_LIBRARY NAMES nag
               PATHS ${NAG_PATH} ENV NAG_PATH
                     ${NAG_DIR}  ENV NAG_DIR
               PATH_SUFFIXES lib lib64

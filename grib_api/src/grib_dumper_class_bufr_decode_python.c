@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -162,11 +162,11 @@ static void dump_values(grib_dumper* d,grib_accessor* a)
     grib_context* c=a->context;
     grib_handle* h=grib_handle_of_accessor(a);
 
-    grib_value_count(a,&count);
-    size=count;
-
     if ( (a->flags & GRIB_ACCESSOR_FLAG_DUMP) == 0 || (a->flags & GRIB_ACCESSOR_FLAG_READ_ONLY) !=0)
         return;
+
+    grib_value_count(a,&count);
+    size=count;
 
     if (size <= 1) {
         err=grib_unpack_double(a,&value,&size);
@@ -215,17 +215,17 @@ static void dump_values(grib_dumper* d,grib_accessor* a)
 static void dump_values_attribute(grib_dumper* d,grib_accessor* a, const char* prefix)
 {
     grib_dumper_bufr_decode_python *self = (grib_dumper_bufr_decode_python*)d;
-    double value; size_t size = 0;
+    double value=0; size_t size = 0;
     int err = 0;
     long count=0;
     char* sval;
     grib_context* c=a->context;
 
-    grib_value_count(a,&count);
-    size=count;
-
     if ( (a->flags & GRIB_ACCESSOR_FLAG_DUMP) == 0 || (a->flags & GRIB_ACCESSOR_FLAG_READ_ONLY) !=0)
         return;
+
+    grib_value_count(a,&count);
+    size=count;
 
     if (size <= 1) {
         err=grib_unpack_double(a,&value,&size);
@@ -272,10 +272,11 @@ static void dump_long(grib_dumper* d, grib_accessor* a, const char* comment)
     grib_context* c=a->context;
     grib_handle* h=grib_handle_of_accessor(a);
 
+    if ( (a->flags & GRIB_ACCESSOR_FLAG_DUMP) == 0  )
+        return;
+
     grib_value_count(a,&count);
     size=count;
-
-    if ( (a->flags & GRIB_ACCESSOR_FLAG_DUMP) == 0  ) return;
 
     if ( (a->flags & GRIB_ACCESSOR_FLAG_READ_ONLY) != 0) {
         if (self->isLeaf==0) {
@@ -344,11 +345,11 @@ static void dump_long_attribute(grib_dumper* d, grib_accessor* a, const char* pr
     long count=0;
     grib_context* c=a->context;
 
-    grib_value_count(a,&count);
-    size=count;
-
     if ( (a->flags & GRIB_ACCESSOR_FLAG_DUMP) == 0 || (a->flags & GRIB_ACCESSOR_FLAG_READ_ONLY) != 0)
         return;
+
+    grib_value_count(a,&count);
+    size=count;
 
     if (size <= 1) {
         err=grib_unpack_long(a,&value,&size);
@@ -392,10 +393,10 @@ static void dump_double(grib_dumper* d,grib_accessor* a,const char* comment)
     grib_handle* h=grib_handle_of_accessor(a);
     grib_context* c=h->context;
 
-    grib_unpack_double(a,&value,&size);
     if ( (a->flags & GRIB_ACCESSOR_FLAG_DUMP) == 0 || (a->flags & GRIB_ACCESSOR_FLAG_READ_ONLY) != 0)
         return;
 
+    grib_unpack_double(a,&value,&size);
     self->empty=0;
 
     r=compute_bufr_key_rank(h,self->keys,a->name);
@@ -542,12 +543,13 @@ static void dump_label(grib_dumper* d,grib_accessor* a,const char* comment)
 {
 }
 
-static void _dump_long_array(grib_handle* h, FILE* f, const char* key, const char* print_key)
+static void _dump_long_array(grib_handle* h, FILE* f, const char* key)
 {
     size_t size=0;
     if (grib_get_size(h,key,&size)==GRIB_NOT_FOUND) return;
+    if (size==0) return;
 
-    fprintf(f,"    iVals = codes_get_array(ibufr, '%s')\n",print_key);
+    fprintf(f,"    iVals = codes_get_array(ibufr, '%s')\n", key);
 }
 
 static void dump_section(grib_dumper* d, grib_accessor* a, grib_block_of_accessors* block)
@@ -561,10 +563,12 @@ static void dump_section(grib_dumper* d, grib_accessor* a, grib_block_of_accesso
         depth=2;
         self->empty=1;
         depth+=2;
-        _dump_long_array(h,self->dumper.out,"dataPresentIndicator","inputDataPresentIndicator");
-        _dump_long_array(h,self->dumper.out,"delayedDescriptorReplicationFactor","inputDelayedDescriptorReplicationFactor");
-        _dump_long_array(h,self->dumper.out,"shortDelayedDescriptorReplicationFactor","inputShortDelayedDescriptorReplicationFactor");
-        _dump_long_array(h,self->dumper.out,"extendedDelayedDescriptorReplicationFactor","inputExtendedDelayedDescriptorReplicationFactor");
+        _dump_long_array(h,self->dumper.out,"dataPresentIndicator");
+        _dump_long_array(h,self->dumper.out,"delayedDescriptorReplicationFactor");
+        _dump_long_array(h,self->dumper.out,"shortDelayedDescriptorReplicationFactor");
+        _dump_long_array(h,self->dumper.out,"extendedDelayedDescriptorReplicationFactor");
+        /* Do not show the inputOverriddenReferenceValues array. That's more for ENCODING */
+        /* _dump_long_array(h,self->dumper.out,"inputOverriddenReferenceValues","inputOverriddenReferenceValues"); */
         grib_dump_accessors_block(d,block);
         depth-=2;
     } else if (!grib_inline_strcmp(a->name,"groupNumber")) {
@@ -622,6 +626,7 @@ static void header(grib_dumper* d, grib_handle* h)
         fprintf(self->dumper.out, "#  Using ecCodes version: ");
         grib_print_api_version(self->dumper.out);
         fprintf(self->dumper.out, "\n\n");
+        fprintf(self->dumper.out,"from __future__ import print_function\n");
         fprintf(self->dumper.out,"import traceback\n");
         fprintf(self->dumper.out,"import sys\n");
         fprintf(self->dumper.out,"from eccodes import *\n\n\n");
@@ -629,7 +634,7 @@ static void header(grib_dumper* d, grib_handle* h)
         fprintf(self->dumper.out,"    f = open(input_file)\n");
     }
     fprintf(self->dumper.out,"    # Message number %ld\n    # -----------------\n", d->count);
-    fprintf(self->dumper.out,"    print 'Decoding message number %ld'\n", d->count);
+    fprintf(self->dumper.out,"    print ('Decoding message number %ld')\n", d->count);
     fprintf(self->dumper.out,"    ibufr = codes_bufr_new_from_file(f)\n");
     fprintf(self->dumper.out,"    codes_set(ibufr, 'unpack', 1)\n");
 

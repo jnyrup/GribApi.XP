@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -298,7 +298,11 @@ function( ecbuild_add_library_impl )
       list(REMOVE_ITEM _PAR_LIBS optimized)
       foreach( lib ${_PAR_LIBS} ) # skip NOTFOUND
         if( lib )
-          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with ${lib}")
+
+          string(REGEX REPLACE "[ ]+$" "" ${lib} "${${lib}}") # strips leading whitespaces
+          string(REGEX REPLACE "^[ ]+" "" ${lib} "${${lib}}") # strips trailing whitespaces
+
+          ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): linking with [${lib}]")
           target_link_libraries( ${_PAR_TARGET} ${lib} )
         else()
           ecbuild_debug("ecbuild_add_library(${_PAR_TARGET}): ${lib} not found - not linking")
@@ -415,7 +419,7 @@ function( ecbuild_add_library_impl )
       endif()
     endif()
 
-    if( ECBUILD_IMPLICIT_LINK_LIBRARIES )
+    if( NOT _PAR_TYPE MATCHES "OBJECT" AND ECBUILD_IMPLICIT_LINK_LIBRARIES )
       target_link_libraries( ${_PAR_TARGET} ${ECBUILD_IMPLICIT_LINK_LIBRARIES} )
     endif()
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -249,7 +249,7 @@ static grib_handle* grib_handle_create ( grib_handle  *gl, grib_context* c, cons
     return gl;
 }
 
-grib_handle* grib_handle_new_from_samples ( grib_context* c, const char* name )
+grib_handle* grib_handle_new_from_samples( grib_context* c, const char* name )
 {
     grib_handle* g = 0;
     if ( c == NULL ) c = grib_context_get_default();
@@ -264,7 +264,7 @@ grib_handle* grib_handle_new_from_samples ( grib_context* c, const char* name )
         printf("ECCODES DEBUG: grib_handle_new_from_samples '%s'\n", name);
     }
 
-    g=grib_external_template ( c,name );
+    g = grib_external_template( c,name );
     if ( !g )
         grib_context_log ( c,GRIB_LOG_ERROR,"Unable to load sample file %s.tmpl\n                    in %s",
                 name, c->grib_samples_path );
@@ -1511,8 +1511,8 @@ static grib_multi_support* grib_get_multi_support ( grib_context* c, FILE* f )
     if ( !gm )
     {
         gm=grib_multi_support_new ( c );
-        if ( !c->multi_support ) c->multi_support=gm;
-        else prev->next=gm;
+        if ( !c->multi_support ) { c->multi_support=gm; }
+        else { if (prev) prev->next=gm; }
     }
 
     gm->next=0;

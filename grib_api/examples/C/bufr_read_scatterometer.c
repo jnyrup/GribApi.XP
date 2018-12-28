@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -71,22 +71,19 @@ int main(int argc,char* argv[])
 
         printf("Number of values: %ld\n",numObs);
 
-        /* Allocate memory for the values to be read. Each
-         * parameter must have the same number of values. */
-        lat = (double*)malloc(numObs*sizeof(double));
-        lon = (double*)malloc(numObs*sizeof(double));
-        bscatter = (double*)malloc(numObs*sizeof(double));
-
         /* Get latitude */
         sprintf(key_name,"latitude");
 
         /* Check the size (including all the subsets) */
         CODES_CHECK(codes_get_size(h,key_name,&len),0);
-        if(len != numObs)
-        {
+        if(len != numObs) {
             printf("inconsistent number of %s values found!\n",key_name);
             return 1;
         }
+
+        /* Allocate memory for the values to be read. Each
+         * parameter must have the same number of values. */
+        lat = (double*)malloc(numObs*sizeof(double));
 
         /* Get the values (from all the subsets) */
         CODES_CHECK(codes_get_double_array(h,key_name,lat,&len),0);
@@ -96,13 +93,13 @@ int main(int argc,char* argv[])
 
         /* Check the size (including all the subsets) */
         CODES_CHECK(codes_get_size(h,key_name,&len),0);
-        if(len != numObs)
-        {
+        if(len != numObs) {
             printf("inconsistent number of %s values found!\n",key_name);
             return 1;
         }
 
         /* Get the values (from all the subsets) */
+        lon = (double*)malloc(numObs*sizeof(double));
         CODES_CHECK(codes_get_double_array(h,key_name,lon,&len),0);
 
         /* Get backScatter for beam two. We use an access by condition for this key. */
@@ -110,23 +107,20 @@ int main(int argc,char* argv[])
 
         /* Check the size (including all the subsets) */
         CODES_CHECK(codes_get_size(h,key_name,&len),0);
-        if(len != numObs)
-        {
+        if(len != numObs) {
             printf("inconsistent number of %s values found!\n",key_name);
             return 1;
         }
 
         /* Get the values (from all the subsets) */
+        bscatter = (double*)malloc(numObs*sizeof(double));
         CODES_CHECK(codes_get_double_array(h,key_name,bscatter,&len),0);
 
         /* Print the values */
         printf("pixel   lat    lon     backscatter    \n");
         printf("-------------------------------\n");
-
-        for(i=0; i < numObs; i++)
-        {
-            printf("%4d %.3f %.3f %.3f \n",
-                    i+1,lat[i],lon[i],bscatter[i]);
+        for(i=0; i < numObs; i++) {
+            printf("%4d %.3f %.3f %.3f \n", i+1,lat[i],lon[i],bscatter[i]);
         }
 
         /* Delete handle */

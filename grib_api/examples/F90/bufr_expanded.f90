@@ -1,5 +1,5 @@
 !
-!Copyright 2005-2017 ECMWF.
+!Copyright 2005-2018 ECMWF.
 !
 ! This software is licensed under the terms of the Apache Licence Version 2.0
 !which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -32,7 +32,6 @@ real(kind=8), dimension(:), allocatable       :: values
 
   do while (iret/=CODES_END_OF_FILE)
 
-    ! Get and print some keys form the BUFR header
     write(*,*) 'message: ',count
 
     ! We need to instruct ecCodes to expand all the descriptors

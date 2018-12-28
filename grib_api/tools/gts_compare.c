@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -124,13 +124,13 @@ int counter=0;
 int start=-1;
 int end=-1;
 
-char* grib_tool_description=
+const char* grib_tool_description=
         "Compare GTS messages contained in two files."
         "\n\tIf some differences are found it fails returning an error code."
         "\n\tDefault behaviour: bit-by-bit compare, same order in files.";
 
-char* grib_tool_name="gts_compare";
-char* grib_tool_usage="[options] "
+const char* grib_tool_name="gts_compare";
+const char* grib_tool_usage="[options] "
         "file file";
 
 int grib_options_count=sizeof(grib_options)/sizeof(grib_option);
@@ -262,10 +262,10 @@ static void printInfo(grib_handle* h)
     lastPrint=count;
 }
 
-static void print_index_key_values(grib_index* index,int counter,const char* error_message)
+static void print_index_key_values(grib_index* index,int cnt,const char* error_message)
 {
     grib_index_key* keys=index->keys;
-    printf("== %d == ",counter);
+    printf("== %d == ", cnt);
     if (error_message) printf("%s == ",error_message);
     while (keys) {
         printf("%s=%s ",keys->name,keys->value);

@@ -1,5 +1,5 @@
 #
-# Copyright 2005-2017 ECMWF.
+# Copyright 2005-2018 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -24,7 +24,7 @@ set( CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH} 
 
 include( ecbuild_system NO_POLICY_SCOPE )
 
-ecbuild_requires_macro_version( 2.6 )
+ecbuild_requires_macro_version( 2.7.2 )
 
 ###############################################################################
 # local project
@@ -32,22 +32,41 @@ ecbuild_requires_macro_version( 2.6 )
 ecbuild_declare_project()
 
 ###############################################################################
+# system checks needed for eccodes_config.h and some options like MEMFS
+
+check_type_size( int            ECCODES_SIZEOF_INT    )
+check_type_size( long           ECCODES_SIZEOF_LONG   )
+check_type_size( size_t         ECCODES_SIZEOF_SIZE_T )
+
+check_include_files( assert.h         ECCODES_HAVE_ASSERT_H      )
+check_include_files( string.h         ECCODES_HAVE_STRING_H      )
+check_include_files( sys/types.h      ECCODES_HAVE_SYS_TYPES_H   )
+check_include_files( sys/stat.h       ECCODES_HAVE_SYS_STAT_H    )
+check_include_files( fcntl.h          ECCODES_HAVE_FCNTL_H      )
+check_include_files( unistd.h         ECCODES_HAVE_UNISTD_H      )
+
+check_symbol_exists( fseeko           "stdio.h"    ECCODES_HAVE_FSEEKO )
+check_symbol_exists( posix_memalign   "stdlib.h"   ECCODES_HAVE_POSIX_MEMALIGN )
+check_symbol_exists( fmemopen         "stdio.h"    ECCODES_HAVE_FMEMOPEN )
+check_symbol_exists( funopen          "stdio.h"    ECCODES_HAVE_FUNOPEN )
+
+check_c_source_compiles(
+      " typedef int foo_t;
+      static inline foo_t static_foo(){return 0;}
+      foo_t foo(){return 0;}
+      int main(int argc, char *argv[]){return 0;}
+      " ECCODES_HAVE_C_INLINE )
+
+include(eccodes_test_endiness)
+
+ecbuild_debug("ECCODES_BIG_ENDIAN=${ECCODES_BIG_ENDIAN}")
+ecbuild_debug("ECCODES_LITTLE_ENDIAN=${ECCODES_LITTLE_ENDIAN}")
+
+###############################################################################
 # some variables/options of this project
 
 ecbuild_add_option( FEATURE EXAMPLES
     DESCRIPTION "Build the examples"
-    DEFAULT ON
-)
-
-# controls installation of files in definitions/ -- note that it still creates the symlinks in the build dir
-ecbuild_add_option( FEATURE INSTALL_ECCODES_DEFINITIONS
-    DESCRIPTION "Install the ecCodes definitions"
-    DEFAULT ON
-)
-
-# controls installation of files in samples/ and ifs_samples/ -- note that it still creates the symlinks in the build dir
-ecbuild_add_option( FEATURE INSTALL_ECCODES_SAMPLES
-    DESCRIPTION "Install the ecCodes samples, including IFS samples"
     DEFAULT ON
 )
 
@@ -97,6 +116,7 @@ ecbuild_add_option( FEATURE FORTRAN
 # TODO Remove this after REQUIRED_LANGUAGES
 if( ENABLE_FORTRAN )
     # will set EC_HAVE_FORTRAN with the result
+    set( EC_HAVE_FORTRAN 0 )
     ecbuild_enable_fortran( MODULE_DIRECTORY ${PROJECT_BINARY_DIR}/fortran/modules )
     set( HAVE_FORTRAN ${EC_HAVE_FORTRAN} )
 else()
@@ -107,14 +127,34 @@ endif()
 ecbuild_add_option( FEATURE MEMFS
     DESCRIPTION "Memory based access to definitions/samples"
     DEFAULT OFF
-    CONDITION EC_HAVE_FMEMOPEN OR EC_HAVE_FUNOPEN
-    REQUIRED_PACKAGES "Python VERSION 2.6 NO_LIBS"
+    CONDITION ECCODES_HAVE_FMEMOPEN OR ECCODES_HAVE_FUNOPEN
+    REQUIRED_PACKAGES PythonInterp
 )
 
 #if( HAVE_MEMFS AND "${CMAKE_C_COMPILER_ID}" STREQUAL "Cray")
 #  set( HAVE_MEMFS OFF )
 #  ecbuild_warn("MEMFS not supported with Cray C compiler")
 #endif()
+
+if(HAVE_MEMFS)
+  set( _will_install_defs_samples OFF )
+else()
+  set( _will_install_defs_samples ON )
+endif()
+
+# controls installation of files in definitions/ -- note that it still creates the symlinks in the build dir
+# by default, if memfs is available, then we don't need to install definitions
+ecbuild_add_option( FEATURE INSTALL_ECCODES_DEFINITIONS
+    DESCRIPTION "Install the ecCodes definitions"
+    DEFAULT ${_will_install_defs_samples}
+)
+
+# controls installation of files in samples/ and ifs_samples/ -- note that it still creates the symlinks in the build dir
+# by default, if memfs is available, then we don't need to install samples
+ecbuild_add_option( FEATURE INSTALL_ECCODES_SAMPLES
+    DESCRIPTION "Install the ecCodes samples, including IFS samples"
+    DEFAULT ${_will_install_defs_samples}
+)
 
 # advanced options (not visible in cmake-gui )
 
@@ -170,6 +210,8 @@ if( ENABLE_JPG )
         set( HAVE_LIBOPENJPEG 1 )
     endif()
 
+    ecbuild_info(" HAVE_JPEG=${HAVE_JPEG}")
+
 endif()
 
 
@@ -183,7 +225,7 @@ else()
 endif()
 
 set( IS_BIG_ENDIAN 0 )
-if( EC_BIG_ENDIAN )
+if( ECCODES_BIG_ENDIAN )
     set( IS_BIG_ENDIAN 1 )
 endif()
 
@@ -264,6 +306,7 @@ set( ECCODES_DEFINITION_PATH  ${the_default_data_prefix}/${ECCODES_DEFINITION_SU
 set( ECCODES_SAMPLES_PATH     ${the_default_data_prefix}/${ECCODES_SAMPLES_SUFF} )
 set( ECCODES_IFS_SAMPLES_PATH ${the_default_data_prefix}/${ECCODES_IFS_SAMPLES_SUFF} )
 
+###############################################################################
 ### config header
 
 ecbuild_generate_config_headers()
@@ -306,7 +349,14 @@ add_subdirectory( memfs )
 add_subdirectory( src )
 add_subdirectory( tools )
 add_subdirectory( fortran )
-add_subdirectory( python )
+if (PYTHON_VERSION_MAJOR GREATER 2)
+    ecbuild_warn("Please note: Support for Python3 is currently experimental.")
+    add_subdirectory( python3 )
+    set( ECCODES_PYTHON_DIR "python3" )
+else()
+    add_subdirectory( python )
+    set( ECCODES_PYTHON_DIR "python" )
+endif()
 add_subdirectory( tests )
 add_subdirectory( tigge )
 add_subdirectory( examples )
@@ -332,7 +382,7 @@ add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 # temporary -- add support for ecbuild 1.0.x sub-project inclusion
 # to remove once mars server & client use eckit & ecbuild >= 1.1
 
-if( EC_HAVE_FORTRAN )
+if( HAVE_FORTRAN )
     list( APPEND ECCODES_INCLUDE_DIRS  ${CMAKE_Fortran_MODULE_DIRECTORY} )
     list( APPEND ECCODES_LIBRARIES eccodes_f90 )
 endif()
@@ -360,7 +410,7 @@ ecbuild_pkgconfig(
                  HAVE_ECCODES_THREADS HAVE_ECCODES_OMP_THREADS
                  HAVE_NETCDF HAVE_PYTHON HAVE_FORTRAN HAVE_PNG HAVE_AEC
 )
-if( EC_HAVE_FORTRAN )
+if( HAVE_FORTRAN )
   ecbuild_pkgconfig(
     NAME                eccodes_f90
     URL                 "https://software.ecmwf.int/wiki/display/ECC/"
@@ -383,6 +433,6 @@ ecbuild_print_summary()
 
 ecbuild_info("")
 ecbuild_info("   +--------------------------+")
-ecbuild_info("   |  ecCodes version ${ECCODES_VERSION}   |")
+ecbuild_info("   |  ecCodes version ${ECCODES_VERSION}  |")
 ecbuild_info("   +--------------------------+")
 ecbuild_info("")

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -275,8 +275,10 @@ void grib_file_pool_delete_file(grib_file* file) {
             if (prev->next==file) break;
             prev=prev->next;
         }
-        Assert(prev);
-        prev->next=file->next;
+        DebugAssert(prev);
+        if (prev) {
+            prev->next=file->next;
+        }
     }
 
     if (file->handle) {

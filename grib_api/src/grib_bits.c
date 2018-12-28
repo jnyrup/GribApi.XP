@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -30,9 +30,9 @@ long GRIB_MASK = -1;       /* Mask of sword bits */
  ((b)==max_nbits ? GRIB_MASK : (~(GRIB_MASK<<(b))<<(max_nbits-((q)+(b)))))
 
 
-static unsigned long dmasks[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00, };
+static const unsigned long dmasks[] = { 0xFF, 0xFE, 0xFC, 0xF8, 0xF0, 0xE0, 0xC0, 0x80, 0x00, };
 
-static int max_nbits = sizeof(unsigned long)*8;
+static const int max_nbits = sizeof(unsigned long)*8;
 
 unsigned long grib_decode_unsigned_byte_long(const unsigned char* p, long o, int l)
 {

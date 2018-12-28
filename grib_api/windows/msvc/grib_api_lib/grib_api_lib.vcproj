@@ -1337,10 +1337,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\grib_accessor_classes_hash.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\grib_api_version.c"
 				>
 			</File>
@@ -1438,6 +1434,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\grib_dumper_class_bufr_encode_python.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\grib_dumper_class_bufr_simple.c"
 				>
 			</File>
 			<File
@@ -1682,6 +1682,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\src\grib_nearest_class_latlon_reduced.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\grib_nearest_class_polar_stereographic.c"
 				>
 			</File>
 			<File

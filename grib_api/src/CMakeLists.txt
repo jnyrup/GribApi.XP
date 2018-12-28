@@ -1,5 +1,5 @@
 #
-# Copyright 2005-2017 ECMWF.
+# Copyright 2005-2018 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -287,6 +287,7 @@ list( APPEND grib_api_srcs
     grib_dumper_class_bufr_decode_filter.c
     grib_dumper_class_bufr_decode_fortran.c
     grib_dumper_class_bufr_decode_python.c
+    grib_dumper_class_bufr_simple.c
     grib_dumper_class_json.c
     grib_dumper_class_grib_encode_C.c
     grib_dumper_class_wmo.c
@@ -342,6 +343,7 @@ list( APPEND grib_api_srcs
     grib_nearest_class_latlon_reduced.c
     grib_nearest_class_sh.c
     grib_nearest_class_lambert_conformal.c
+    grib_nearest_class_polar_stereographic.c
     grib_iterator_class_polar_stereographic.c
     grib_iterator_class_lambert_azimuthal_equal_area.c
     grib_iterator_class_lambert_conformal.c
@@ -438,4 +440,6 @@ ecbuild_add_library(TARGET    eccodes
 
 install( FILES grib_api.h eccodes.h eccodes_windef.h DESTINATION ${INSTALL_INCLUDE_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/eccodes_version.h DESTINATION ${INSTALL_INCLUDE_DIR} )
+
+
 

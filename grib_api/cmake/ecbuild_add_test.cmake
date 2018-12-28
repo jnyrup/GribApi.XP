@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -177,8 +177,14 @@ macro( ecbuild_add_test )
     set( _PAR_ENABLED 0 )
   elseif( _PAR_MPI )
     # Check for MPIEXEC if it not set
-    find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
-                  DOC "Executable for running MPI programs." )
+    if( MPIEXEC_EXECUTABLE )
+      set( MPIEXEC ${MPIEXEC_EXECUTABLE} )
+    endif()
+    if( NOT MPIEXEC )
+      find_program( MPIEXEC NAMES mpiexec mpirun lamexec srun
+                    DOC "Executable for running MPI programs." )
+    endif()
+
     if( MPIEXEC )
       set(MPIEXEC_NUMPROC_FLAG "-np" CACHE STRING "Flag used by MPI to specify the number of processes for MPIEXEC")
       ecbuild_debug("ecbuild_add_test(${_PAR_TARGET}): Running using ${MPIEXEC} on ${_PAR_MPI} MPI rank(s)")
@@ -259,7 +265,7 @@ macro( ecbuild_add_test )
 
   ### enable the tests
 
-  if( ENABLE_TESTS AND _${_PAR_TARGET}_condition )
+  if( ENABLE_TESTS AND _${_PAR_TARGET}_condition AND _PAR_ENABLED )
 
     if( _PAR_TYPE MATCHES "PYTHON" )
       if( PYTHONINTERP_FOUND )

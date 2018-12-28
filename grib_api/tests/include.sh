@@ -1,4 +1,4 @@
-# Copyright 2005-2017 ECMWF.
+# Copyright 2005-2018 ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -24,11 +24,11 @@ else
   # save current working dir
   save=`pwd`
 
-  # If this environment variable is set, then become verbose
-  # so one can see why and how a test failed
-  if test "x$ECCODES_TEST_VERBOSE_OUTPUT" != "x"; then
-     set -x
-  fi
+  set -x
+  EXEC=""
+  HAVE_MEMFS=0
+  HAVE_EXTRA_TESTS=0
+  HAVE_JPEG=0
 
   if [ -z "${data_dir}" ]
   then

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -11,7 +11,7 @@
 #include "grib_api_internal.h"
 
 /* Note: all non-alpha are mapped to 0 */
-static int mapping[] = {
+static const int mapping[] = {
 0, /* 00 */
 0, /* 01 */
 0, /* 02 */
@@ -358,7 +358,8 @@ void grib_trie_with_rank_delete_container(grib_trie_with_rank *t)
 {
     GRIB_MUTEX_INIT_ONCE(&once,&init);
     GRIB_MUTEX_LOCK(&mutex);
-    if(t)  {
+    DebugAssert(t);
+    {
         int i;
         for(i = t->first; i <= t->last; i++)
             if (t->next[i]) {
@@ -477,7 +478,7 @@ int grib_trie_with_rank_insert(grib_trie_with_rank* t,const char* key,void* data
 }
 
 /*
-void *grib_trie_with_rank_get_from_list(grib_trie_with_rank_list* list,int rank) {
+static void *grib_trie_with_rank_get_from_list(grib_trie_with_rank_list* list,int rank) {
   grib_trie_with_rank_list* next=list;
   int r=1;
 

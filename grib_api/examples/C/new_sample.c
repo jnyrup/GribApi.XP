@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -12,8 +12,7 @@
 
 /* This code was generated automatically */
 
-
-int main(int argc,const char** argv)
+int main(int argc, char** argv)
 {
     codes_handle *h     = NULL;
     size_t size        = 0;

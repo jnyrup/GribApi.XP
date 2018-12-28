@@ -1,4 +1,4 @@
-# (C) Copyright 1996-2017 ECMWF.
+# (C) Copyright 2011- ECMWF.
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -405,12 +405,16 @@ endfunction()\n\n" )
             TARGET __get_data_${_p_TARGET}_${_name}
             NAME ${_file} ${_dirname} ${_md5} ${_extract} ${_nocheck} )
 
-        # The option /fast disables dependency checking on a target, see
-        # https://cmake.org/Wiki/CMake_FAQ#Is_there_a_way_to_skip_checking_of_dependent_libraries_when_compiling.3F
-        if( WIN32 )
-          set( _fast "\fast" )
+        if ( ${CMAKE_GENERATOR} MATCHES Ninja )
+          set( _fast "" )
         else()
-          set( _fast "/fast" )
+          # The option /fast disables dependency checking on a target, see
+          # https://cmake.org/Wiki/CMake_FAQ#Is_there_a_way_to_skip_checking_of_dependent_libraries_when_compiling.3F
+          if( WIN32 )
+            set( _fast "\fast" )
+          else()
+            set( _fast "/fast" )
+          endif()
         endif()
         file( APPEND ${_script}
               "exec_check( \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target __get_data_${_p_TARGET}_${_name}${_fast} )\n" )

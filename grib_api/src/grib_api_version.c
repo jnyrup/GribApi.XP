@@ -1,3 +1,3 @@
 #include "grib_api_internal.h"
 
-const char * grib_get_git_sha1() { return "ef203a98d50eb6db1279312cd0f506803236cfa6"; }
+const char * grib_get_git_sha1() { return "5fd46bca0dcb3a1f085ca3476c08d718077690cc"; }

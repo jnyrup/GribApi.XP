@@ -21,7 +21,6 @@ set( EC_SIZEOF_LONG_DOUBLE 8 )
 set( EC_SIZEOF_SIZE_T 8 )
 set( EC_SIZEOF_SSIZE_T 8 )
 set( EC_SIZEOF_OFF_T 8 )
-set( EC_SIZEOF_OFF_T 8 )
 set( EC_BIG_ENDIAN 0 )
 set( EC_LITTLE_ENDIAN 1 )
 set( IEEE_BE 0 )
@@ -95,6 +94,8 @@ set( EC_ATTRIBUTE_CONSTRUCTOR_INITS_ARGV 0 )
 set( EC_HAVE_PROCFS 1 )
 set( EC_HAVE_DLFCN_H 1 )
 set( EC_HAVE_DLADDR 1 )
+set( EC_HAVE_AIOCB 1 )
+set( EC_HAVE_AIOCB64 1 )
 
 # Disable relative rpaths as aprun does not respect it
 set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
@@ -103,14 +104,20 @@ set( ENABLE_RELATIVE_RPATHS OFF CACHE STRING "Disable relative rpaths" FORCE )
 # COMPILER
 ####################################################################
 
+if( "${CMAKE_VERSION}" VERSION_LESS 3.5 )
 include(CMakeForceCompiler)
-
 CMAKE_FORCE_C_COMPILER       ( cc  Cray )
 CMAKE_FORCE_CXX_COMPILER     ( CC  Cray )
 CMAKE_FORCE_Fortran_COMPILER ( ftn Cray )
+endif()
+
+set(CMAKE_Fortran_PREPROCESS_SOURCE
+  "${CMAKE_CURRENT_LIST_DIR}/preprocess_cray_fortran \"<CMAKE_Fortran_COMPILER>\" \"<DEFINES>\" \"<INCLUDES>\" \"<FLAGS>\" <SOURCE> <PREPROCESSED_SOURCE>")
 
 set( ECBUILD_FIND_MPI OFF )
 set( ECBUILD_TRUST_FLAGS ON )
+
+set( CXX11_FLAG "-hstd=c++11" )
 
 ####################################################################
 # OpenMP FLAGS
@@ -128,10 +135,16 @@ set( OMPSTUBS_Fortran_FLAGS  "-hnoomp" )
 # LINK FLAGS
 ####################################################################
 
+if( EXISTS "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" )
+  set( LIBCRAY_CXX_RTS "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" )
+elseif( EXISTS "$ENV{CC_X86_64}/lib/libcray-c++-rts.so" )
+  set( LIBCRAY_CXX_RTS "$ENV{CC_X86_64}/lib/libcray-c++-rts.so" )
+endif()
+
 set( ECBUILD_SHARED_LINKER_FLAGS "-Wl,--eh-frame-hdr -Ktrap=fp" )
 set( ECBUILD_MODULE_LINKER_FLAGS "-Wl,--eh-frame-hdr -Ktrap=fp -Wl,-Map,loadmap" )
 set( ECBUILD_EXE_LINKER_FLAGS    "-Wl,--eh-frame-hdr -Ktrap=fp -Wl,-Map,loadmap -Wl,--as-needed" )
-set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "$ENV{CC_X86_64}/lib/x86-64/libcray-c++-rts.so" CACHE STRING "" )
+set( ECBUILD_CXX_IMPLICIT_LINK_LIBRARIES "${LIBCRAY_CXX_RTS}" CACHE STRING "" )
 
 ####################################################################
 # LIBRARIES

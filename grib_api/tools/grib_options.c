@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -14,12 +14,15 @@
  */
 #include "grib_tools.h"
 
+extern char *optarg;
+extern int optind;
+
 #ifdef ECCODES_ON_WINDOWS
 /* Microsoft Windows Visual Studio support */
 #include "wingetopt.h"
 #endif
 
-char* names[]={"parameter","vertical","geography","data","mars","local"};
+const char* names[]={"parameter","vertical","geography","data","mars","local"};
 int names_count=6;
 
 /* id,args,help */
@@ -38,7 +41,7 @@ grib_options_help grib_options_help_list[] ={
    "\n\t\tSet all the data values to \"value\".\n"},
   {"e:","tolerance","\n\t\tOnly values whose difference is more than tolerance are considered different.\n"},
   {"f",0,"Force. Force the execution not to fail on error.\n"},
-  {"F:","format","\n\t\tC style format for floating point values.\n"},
+  {"F:","format","\n\t\tC style format for floating-point values.\n"},
   {"g",0,"Copy GTS header. \n"},
   {"G",0,"GRIBEX compatibility mode.\n"},
   {"i:","index",
@@ -57,7 +60,7 @@ grib_options_help grib_options_help_list[] ={
   {"o:","output_file",
    "\n\t\tOutput is written to output_file."
    "\n\t\tIf an output file is required and -o is not used, the"
-   " output is written to filter.out\n"},
+   " output is written to 'filter.out'\n"},
   {"p:","key[:{s|d|i}],key[:{s|d|i}],...",
    "\n\t\tDeclaration of keys to print."
    "\n\t\tFor each key a string (key:s), a double (key:d) or an integer (key:i)"
@@ -84,18 +87,18 @@ grib_options_help grib_options_help_list[] ={
   {"v",0,"Verbose.\n"},
   {"7",0,"Does not fail when the message has wrong length\n"},
   {"A:","absolute error\n",
-  "\tCompare floating point values using the absolute error as tolerance.\n\t\tDefault is absolute error=0\n"},
+  "\tCompare floating-point values using the absolute error as tolerance.\n\t\tDefault is absolute error=0\n"},
   {"C",0,"C code mode. A C code program generating the message is dumped.\n"},
   {"D",0,"Debug mode.\n"},
   {"H",0,"Print octet content in hexadecimal format.\n"},
-  {"M",0,"Multi-field support off. Turn off support for multiple fields in single grib message.\n"},
+  {"M",0,"Multi-field support off. Turn off support for multiple fields in single GRIB message.\n"},
   {"O",0,"Octet mode. WMO documentation style dump.\n"},
   {"P:","key[:{s|d|i}],key[:{s|d|i}],...",
    "\n\t\tAs -p adding the declared keys to the default list.\n"},
   {"R:","key1=relative_error1,key2=relative_error2,...\n",
-   "\tCompare floating point values using the relative error as tolerance."
-"\n\t\tkey1=relative_error will compare key1 using relative_error1."
-"\n\t\tall=relative_error will compare all the floating point keys using relative_error. Default all=0.\n"},
+        "\tCompare floating-point values using the relative error as tolerance."
+        "\n\t\tkey1=relative_error1 will compare key1 using relative_error1."
+        "\n\t\tall=relative_error will compare all the floating-point keys using relative_error. Default all=0.\n"},
   {"S",0,"Strict. Only messages matching all the constraints are copied to"
    "\n\t\tthe output file\n"},
   {"T:","T | B | M | A","Message type. T->GTS, B->BUFR, M->METAR (Experimental),A->Any (Experimental).\n\t\t\tThe input file is interpreted according to the message type.\n"},
@@ -112,7 +115,7 @@ grib_options_help grib_options_help_list[] ={
 int grib_options_help_count=sizeof(grib_options_help_list)/sizeof(grib_options_help);
 
 
-void usage()
+void usage(void)
 {
     int i=0;
     printf("\nNAME \t%s\n\n",grib_tool_name);
@@ -373,7 +376,7 @@ char* grib_options_get_help(char* id)
     }
     for (i=0; i<grib_options_help_count;i++) {
         if (!strcmp(id,grib_options_help_list[i].id)) {
-            return grib_options_help_list[i].help != NULL ? grib_options_help_list[i].help : err;
+            return grib_options_help_list[i].help != NULL ? (char*)grib_options_help_list[i].help : err;
         }
     }
     return err;
@@ -396,13 +399,13 @@ char* grib_options_get_args(char* id)
     }
     for (i=0; i<grib_options_help_count;i++) {
         if (!strcmp(id,grib_options_help_list[i].id)) {
-            return grib_options_help_list[i].args != NULL ? grib_options_help_list[i].args : err;
+            return grib_options_help_list[i].args != NULL ? (char*)grib_options_help_list[i].args : err;
         }
     }
     return err;
 }
 
-void usage_doxygen()
+void usage_doxygen(void)
 {
     int i=0;
     printf("/*!  \\page %s %s\n",grib_tool_name,grib_tool_name);
@@ -422,7 +425,7 @@ void usage_doxygen()
 }
 
 #if 0
-void usage_doxygen() {
+void usage_doxygen(void) {
     int i=0;
     printf("/*!  \\page %s %s\n",grib_tool_name,grib_tool_name);
     printf("\\section DESCRIPTION \n%s\n\n",grib_tool_description);

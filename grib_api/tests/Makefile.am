@@ -1,10 +1,10 @@
 TESTS = definitions.sh \
-        calendar.sh \
+        grib_calendar.sh \
         bufrdc_desc_ref.sh \
         bufrdc_ref.sh \
-        bufr_dump.sh \
+        bufr_dump_data.sh \
         bufr_filter.sh \
-        bufr_json.sh \
+        bufr_json_data.sh \
         bufr_compare.sh \
         bufr_copy.sh \
         bufr_count.sh \
@@ -28,7 +28,7 @@ TESTS = definitions.sh \
         grib_filter.sh  \
         grib_multi.sh \
         budg.sh \
-        gridType.sh \
+        grib_gridType.sh \
         grib_octahedral.sh \
         grib_global.sh \
         grib_concept.sh \
@@ -63,9 +63,9 @@ TESTS = definitions.sh \
         md5.sh \
         grib_util_set_spec.sh \
         grib_neg_fctime.sh \
-        ecc-197.sh \
-        ecc-286.sh \
-        ecc-288.sh
+        bufr_ecc-197.sh \
+        bufr_ecc-286.sh \
+        bufr_ecc-288.sh
 
 # First download all the necessary data for testing
 # Note: if download fails, no tests will be done

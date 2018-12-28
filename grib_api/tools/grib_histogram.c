@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -16,7 +16,7 @@ static void usage(const char *prog)
     exit(1);
 }
 
-int main(int argc, const char *argv[])
+int main(int argc, char *argv[])
 {
     int i,j;
     FILE *in;
@@ -60,7 +60,7 @@ int main(int argc, const char *argv[])
                 values = (double*)malloc(size*sizeof(double));
                 last_size = size;
                 if (!values) {
-                    fprintf(stderr, "Failed to allocate memory for values (%ld bytes)\n", size*sizeof(double));
+                    fprintf(stderr, "Failed to allocate memory for values (%lu bytes)\n", size*sizeof(double));
                     exit(1);
                 }
             }

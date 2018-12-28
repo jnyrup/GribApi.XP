@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -189,7 +189,7 @@ static int concept_condition_expression_true(grib_handle* h,grib_concept_conditi
     case GRIB_TYPE_STRING:
         ok = (grib_get_string(h,c->name,buf,&len) == GRIB_SUCCESS) &&
         ((cval = grib_expression_evaluate_string(h,c->expression,tmp,&size,&err)) != NULL) &&
-        (err==0) && (strcmp(buf,cval) == 0);
+        (err==0) && (grib_inline_strcmp(buf,cval) == 0);
         break;
 
     default:
@@ -342,10 +342,14 @@ static int grib_concept_apply(grib_accessor* a, const char* name)
         err= nofail ? GRIB_SUCCESS : GRIB_CONCEPT_NO_MATCH;
         if (err) {
             size_t i = 0, concept_count = 0;
+            long editionNumber=0;
             char* all_concept_vals[MAX_NUM_CONCEPT_VALUES] = {NULL,}; /* sorted array containing concept values */
             grib_concept_value* pCon = concepts;
 
             grib_context_log(h->context,GRIB_LOG_ERROR, "concept: no match for %s=%s", act->name,name);
+            if (grib_get_long(h,"edition",&editionNumber)==GRIB_SUCCESS) {
+                grib_context_log(h->context,GRIB_LOG_ERROR, "concept: input handle edition=%ld", editionNumber);
+            }
 
             /* Create a list of all possible values for this concept and sort it */
             while (pCon) {

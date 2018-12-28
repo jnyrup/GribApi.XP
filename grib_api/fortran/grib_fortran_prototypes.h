@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -141,6 +141,26 @@ int any_f_new_from_file_(int *fid, int *gid);
 int any_f_new_from_file__(int *fid, int *gid);
 int any_f_new_from_file(int *fid, int *gid);
 
+int any_f_scan_file_(int* fid,int* n);
+int any_f_scan_file__(int* fid,int* n);
+int any_f_scan_file(int* fid,int* n);
+
+int any_f_new_from_scanned_file_(int* fid,int* msgid,int* gid);
+int any_f_new_from_scanned_file__(int* fid,int* msgid,int* gid);
+int any_f_new_from_scanned_file(int* fid,int* msgid,int* gid);
+
+int any_f_load_all_from_file_(int* fid,int* n);
+int any_f_load_all_from_file__(int* fid,int* n);
+int any_f_load_all_from_file(int* fid,int* n);
+
+int any_f_new_from_loaded_(int* msgid,int* gid);
+int any_f_new_from_loaded__(int* msgid,int* gid);
+int any_f_new_from_loaded(int* msgid,int* gid);
+
+int codes_f_clear_loaded_from_file_(void);
+int codes_f_clear_loaded_from_file__(void);
+int codes_f_clear_loaded_from_file(void);
+
 int grib_f_new_from_file_(int *fid, int *gid);
 int grib_f_new_from_file__(int *fid, int *gid);
 int grib_f_new_from_file(int *fid, int *gid);
@@ -243,9 +263,11 @@ int grib_f_set_missing_(int *gid, char *key, int len);
 int grib_f_set_missing__(int *gid, char *key, int len);
 int grib_f_set_missing(int *gid, char *key, int len);
 int grib_f_is_missing_(int *gid, char *key, int *isMissing, int len);
-int grib_f_is_defined_(int *gid, char *key, int *isDefined, int len);
 int grib_f_is_missing__(int *gid, char *key, int *isMissing, int len);
 int grib_f_is_missing(int *gid, char *key, int *isMissing, int len);
+int grib_f_is_defined_(int* gid, char* key,int* isDefined,int len);
+int grib_f_is_defined__(int* gid, char* key,int* isDefined,int len);
+int grib_f_is_defined(int* gid, char* key,int* isDefined,int len);
 int grib_f_set_real4_(int *gid, char *key, float *val, int len);
 int grib_f_set_real4__(int *gid, char *key, float *val, int len);
 int grib_f_set_real4(int *gid, char *key, float *val, int len);

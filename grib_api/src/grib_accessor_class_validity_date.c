@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2017 ECMWF.
+ * Copyright 2005-2018 ECMWF.
  *
  * This software is licensed under the terms of the Apache Licence Version 2.0
  * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -144,7 +144,7 @@ static void init_class(grib_accessor_class* c)
 /* END_CLASS_IMP */
 
 /* Table of multipliers to convert step units to minutes */
-static double u2m[] =  {
+static const double u2m[] =  {
         1,         /* index 0:  minutes  */
         60,        /* index 1:  hour     */
         24*60,     /* index 2:  day      */
