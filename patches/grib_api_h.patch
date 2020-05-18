@@ -1,17 +1,8 @@
-From 24a37206caac3ec8aa946013b764fa64e95003e8 Mon Sep 17 00:00:00 2001
-From: 0x1mason <etmillin@gmail.com>
-Date: Mon, 14 Nov 2016 15:56:52 -0500
-Subject: [PATCH] Patch new version to GribApi spec
-
----
- grib_api/src/grib_api.h | 34 ++++++++++++++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
-
 diff --git a/grib_api/src/grib_api.h b/grib_api/src/grib_api.h
-index 245b12f..bfacb35 100644
+index 44b0e7e..2bb8759 100644
 --- a/grib_api/src/grib_api.h
 +++ b/grib_api/src/grib_api.h
-@@ -1260,6 +1260,40 @@ int grib_keys_iterator_get_bytes(grib_keys_iterator *kiter, unsigned char *v, si
+@@ -1326,6 +1326,40 @@ int codes_copy_key(grib_handle* h1, grib_handle* h2, const char* key, int type);
  
  void grib_update_sections_lengths(grib_handle* h);
  
@@ -52,6 +43,3 @@ index 245b12f..bfacb35 100644
  
  /**
  * Convert an error code into a string
--- 
-1.9.4.msysgit.0
-
